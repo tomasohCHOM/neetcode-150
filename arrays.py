@@ -3,9 +3,7 @@ from collections import defaultdict
 
 
 class Solution:
-    # Create a HashSet to store each number. If we try to insert an element that
-    # is already there, then the array contains a duplicate.
-    # Time: O(N), Space: O(N)
+    # Contains Duplicate (Easy)
     def containsDuplicate(self, nums: List[int]) -> bool:
         num_set = set()
         for num in nums:
@@ -14,9 +12,7 @@ class Solution:
             num_set.add(num)
         return False
 
-    # All characters and frequencies of s must be the same as t. We can use a
-    # frequency map for each and compare them at the end.
-    # Time: O(N), Space: O(N)
+    # Valid Anagram (Easy)
     def isAnagram(self, s: str, t: str) -> bool:
         if len(s) != len(t):
             return False
@@ -27,10 +23,7 @@ class Solution:
             count_t[char_t] += 1
         return count_s == count_t
 
-    # Find the target by subtracting the current number from it and see if we
-    # can find a match from previously seen values (using a HashMap). Return the
-    # indices from that match.
-    # Time: O(N), Space: O(N)
+    # Two Sum (Easy)
     def twoSum(self, nums: List[int], target: int) -> List[int]:
         prev_map = {}
         for i, num in enumerate(nums):
@@ -39,10 +32,7 @@ class Solution:
                 return [i, prev_map[diff]]
             prev_map[num] = i
 
-    # The key here is that strs[i] consists only of lowercase English letters.
-    # We can use an array of size 26, then group corresponding anagrams.
-    # Time: O(M * N), where M is len(strs) and N is the avg length of a string.
-    # Space: O(N)
+    # Group Anagrams (Medium)
     def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
         freqs = defaultdict(list)
         for word in strs:
@@ -51,3 +41,90 @@ class Solution:
                 freq[ord(char) - ord("a")] += 1
             freqs[tuple(freq)].append(word)
         return freqs.values()
+
+    # Top K Frequent Elements (Medium)
+    def topKFrequent(self, nums: List[int], k: int) -> List[int]:
+        max_count = 0
+        freq = defaultdict(int)
+        for num in nums:
+            freq[num] += 1
+            max_count = max(max_count, freq[num])
+
+        count = [[] for _ in range(max_count + 1)]
+        for n, c in freq.items():
+            count[c].append(n)
+
+        output = []
+        for i in range(len(count) - 1, 0, -1):
+            for num in count[i]:
+                output.append(num)
+                if len(output) == k:
+                    return output
+
+    # Encode and Decode Strings (Medium) - two functions
+    def encode(self, strs: List[str]) -> str:
+        output = ""
+        for s in strs:
+            output += str(len(s)) + "#" + s
+        return output
+
+    def decode(self, s: str) -> List[str]:
+        output = []
+        i = 0
+        while i < len(s):
+            length = ""
+            while s[i] != "#":
+                length += s[i]
+                i += 1
+            length = int(length)
+            output.append(s[i + 1 : i + length + 1])
+            i = i + length + 1
+        return output
+
+    # Product of Array Except Self (Medium)
+    def productExceptSelf(self, nums: List[int]) -> List[int]:
+        prefix = 1
+        output = [1] * len(nums)
+        for i in range(len(nums)):
+            output[i] = prefix
+            prefix *= nums[i]
+        suffix = 1
+        for i in range(len(nums) - 1, -1, -1):
+            output[i] *= suffix
+            suffix *= nums[i]
+        return output
+
+    # Valid Sudoku (Medium)
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        rows = defaultdict(set)
+        cols = defaultdict(set)
+        squares = defaultdict(set)
+        for r in range(len(board)):
+            for c, value in enumerate(board[r]):
+                if value == ".":
+                    continue
+                if (
+                    value in rows
+                    and r in rows[value]
+                    or value in cols
+                    and c in cols[value]
+                    or value in squares
+                    and (r // 3, c // 3) in squares[value]
+                ):
+                    return False
+                rows[value].add(r)
+                cols[value].add(c)
+                squares[value].add((r // 3, c // 3))
+        return True
+
+    # Longest Consecutive Sequence (Medium)
+    def longestConsecutive(self, nums: List[int]) -> int:
+        output = 0
+        num_set = set(nums)
+        for num in num_set:
+            if num - 1 not in num_set:
+                seq = 1
+                while num + seq in num_set:
+                    seq += 1
+                output = max(output, seq)
+        return output
