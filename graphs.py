@@ -291,32 +291,32 @@ class Solution:
 
     # Redundant Connection (Medium)
     def findRedundantConnection(self, edges: List[List[int]]) -> List[int]:
-        par = [i for i in range(len(edges) + 1)]
-        rank = [1] * (len(edges) + 1)
+        N = len(edges)
+        parents = [i for i in range(N + 1)]
+        rank = [1] * (N + 1)
 
         def find(n):
-            p = par[n]
-            while p != par[p]:
-                par[p] = par[par[p]]
-                p = par[p]
-            return p
-
+            if n == parents[n]:
+                return parents[n]
+            parents[n] = find(parents[n])
+            return parents[n]
+        
         def union(n1, n2):
             p1, p2 = find(n1), find(n2)
-
             if p1 == p2:
                 return False
             if rank[p1] > rank[p2]:
-                par[p2] = p1
+                parents[p2] = p1
                 rank[p1] += rank[p2]
             else:
-                par[p1] = p2
+                parents[p1] = p2
                 rank[p2] += rank[p1]
             return True
+        
+        for u, v in edges:
+            if not union(u, v):
+                return [u, v]
 
-        for n1, n2 in edges:
-            if not union(n1, n2):
-                return [n1, n2]
 
     # Word Ladder (Hard)
     def ladderLength(self, beginWord: str, endWord: str, wordList: List[str]) -> int:
